@@ -1,0 +1,31 @@
+# Local credentials and environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+
+# Python and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Temporary experiments and uncurated logs
+scratch/
+tmp/
+*.log
+
+# Operating-system noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Keep uv.lock, curated outputs, and portable VS Code settings in Git.
