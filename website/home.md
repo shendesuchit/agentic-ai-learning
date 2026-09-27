@@ -20,3 +20,7 @@ Follow the request from the application to the provider. Then compare how a comp
 - [Inside an AIMessage](01-langchain/01-models/visual-guide.md#inside-an-aimessage)
 
 The diagrams illustrate the concepts. They are not live model calls or performance measurements.
+
+## Try one model call
+
+[Direct provider call](01-langchain/01-models/experiments/01-provider-specific-baseline/README.md) shows the same small request with OpenAI, Gemini, Groq, or OpenRouter. Choose the provider you can access, then look at the response before adding LangChain.

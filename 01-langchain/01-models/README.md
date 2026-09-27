@@ -98,7 +98,7 @@ Providers can differ in available models, settings, tool calling, structured out
 
 ## Examples we will explore
 
-These are the practical comparisons for this chapter. **They are planned; no model calls or measurements have been made yet.**
+The [direct SDK baseline](experiments/01-provider-specific-baseline/README.md) is ready for OpenAI, Gemini, Groq, or OpenRouter. Pick one provider that you can access and run a single request. **No model calls or measurements have been recorded in this repository yet.**
 
 1. Call one provider directly through its SDK, then make the same request through LangChain.
 2. Inspect the complete response, streamed chunks, and results for several inputs.

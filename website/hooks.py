@@ -84,14 +84,33 @@ def on_config(config):
             title, content = read_title(topic / "README.md")
             overview.append(f"- [{title}]({topic.name}/README.md)")
             copy_diagrams(topic)
+            chapter_nav = [{"Explanation": f"{relative}/README.md"}]
             if relative in specs:
                 title = specs[relative]["title"]
                 # Add this only to the generated website copy.
                 content += '\n\n<div class="visual-link" markdown="1">\n\n[Explore the interactive diagrams](visual-guide.md)\n\n</div>\n'
                 write(f"{relative}/visual-guide.md", visual_guide(relative, title, specs[relative]))
-                section.append({title: [{"Explanation": f"{relative}/README.md"}, {"Interactive diagrams": f"{relative}/visual-guide.md"}]})
-            else:
-                section.append({title: f"{relative}/README.md"})
+                chapter_nav.append({"Interactive diagrams": f"{relative}/visual-guide.md"})
+            experiments_dir = topic / "experiments"
+            if experiments_dir.is_dir():
+                for experiment in sorted(experiments_dir.iterdir()):
+                    if not experiment.is_dir() or experiment.is_symlink() or not NUMBERED.fullmatch(experiment.name):
+                        continue
+                    readme = experiment / "README.md"
+                    if readme.is_file() and not readme.is_symlink():
+                        experiment_title, experiment_content = read_title(readme)
+                        experiment_path = f"{relative}/experiments/{experiment.name}/README.md"
+                        code = experiment / "main.py"
+                        if code.is_file() and not code.is_symlink():
+                            code_path = f"{relative}/experiments/{experiment.name}/code.md"
+                            source = code.read_text(encoding="utf-8")
+                            write(code_path, f"# {experiment_title} — Python code\n\n[Read the explanation](README.md)\n\n```python\n{source}\n```\n")
+                            experiment_content += "\n\n[Read the complete Python code](code.md)\n"
+                        write(experiment_path, experiment_content)
+                        chapter_nav.append({experiment_title: experiment_path})
+                        if code.is_file() and not code.is_symlink():
+                            chapter_nav.append({f"{experiment_title} — code": code_path})
+            section.append({title: chapter_nav if len(chapter_nav) > 1 else f"{relative}/README.md"})
             write(f"{relative}/README.md", content)
             published_topics.add(relative)
         write(f"{module.name}/README.md", "\n".join(overview) + "\n")

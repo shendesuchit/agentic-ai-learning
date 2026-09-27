@@ -17,7 +17,7 @@ have folders so far. The remaining entries describe future work.
 | Topic | Learning focus | Status |
 |---|---|---|
 | [00-orientation](00-orientation/README.md) | Why the framework exists; packages, ecosystem, and boundaries | Explanation available |
-| [01-models](01-models/README.md) | Provider baseline; model interface, configuration, invocation, and responses | Explanation and diagrams available; experiments pending |
+| [01-models](01-models/README.md) | Provider baseline; model interface, configuration, invocation, and responses | Direct SDK code available; calls and comparison pending |
 | `02-messages` | Roles, content blocks, metadata, tool messages, history, and chunks | Planned |
 | `03-prompts` | Static instructions, templates, dynamic inputs, and message placeholders | Planned |
 | `04-runnables-and-composition` | Runnable interface, sequences, parallel composition, configuration, retries | Planned |
@@ -39,7 +39,7 @@ have folders so far. The remaining entries describe future work.
 ## Current checkpoint
 
 - Orientation and Models explanations are available, with [interactive Models diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html).
-- Model experiments have not been run yet.
+- The [first direct SDK experiment](01-models/experiments/01-provider-specific-baseline/README.md) is ready for one provider. No model calls have been recorded yet.
 
 ## Boundaries
 

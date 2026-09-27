@@ -60,9 +60,9 @@ uv sync
 uv run python --version
 ```
 
-The last command should report Python 3.11.x. `uv sync` creates `.venv` and
-`uv.lock`. Commit the lockfile; `.venv` is ignored. There are intentionally no
-third-party Python dependencies yet. Do not run `uv init`: this project is
+The last command should report Python 3.11.x. `uv sync` creates `.venv` using
+the committed `uv.lock`; `.venv` is ignored. Provider SDKs are optional, so a
+plain `uv sync` does not install them. Do not run `uv init`: this project is
 already configured.
 
 Press **Ctrl+Shift+P**, choose **Python: Select Interpreter**, and select the
@@ -75,8 +75,8 @@ There is no need to activate a PowerShell environment script for those commands.
 
 ## 5. Environment variables, when needed
 
-The example file contains comments only. When the first provider is chosen,
-copy it once and add the variable names required by that provider:
+The example file lists supported provider key names with empty values. Copy it
+once, then fill only the key for the provider you will use:
 
 ```powershell
 Copy-Item .env.example .env
@@ -84,8 +84,8 @@ Copy-Item .env.example .env
 
 Do not repeat this copy over a populated `.env`. The real `.env` is ignored by
 Git. Keep only empty values and explanatory comments in `.env.example`.
-A `.env` file is not automatically loaded by ordinary Python execution; we
-will choose an explicit loading method with the first experiment.
+The experiment command uses `uv run --env-file .env` to load your selected key;
+ordinary Python execution does not load `.env` automatically.
 
 ## 6. Save the foundation checkpoint
 
