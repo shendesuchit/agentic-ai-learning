@@ -3,7 +3,7 @@
 ## Why we are learning this
 
 We want to understand what a framework does for us and what responsibilities
-remain in our application. We will compare a direct provider call with a model
+remain in our application. We compare a direct provider call with a model
 abstraction, then work towards a manual tool loop and a framework-managed agent.
 
 The important question is: **Which work did this abstraction take over, and what
@@ -17,8 +17,8 @@ have folders so far. The remaining entries describe future work.
 | Topic | Learning focus | Status |
 |---|---|---|
 | [00-orientation](00-orientation/README.md) | Why the framework exists; packages, ecosystem, and boundaries | Explanation available |
-| [01-models](01-models/README.md) | Provider baseline; model interface, configuration, invocation, and responses | Direct SDK code available; calls and comparison pending |
-| `02-messages` | Roles, content blocks, metadata, tool messages, history, and chunks | Planned |
+| [01-models](01-models/README.md) | Provider baseline; model interface, configuration, invocation, and responses | Direct SDK and LangChain wrapper compared with Groq |
+| `02-messages` | Roles, content blocks, metadata, tool messages, history, and chunks | Next |
 | `03-prompts` | Static instructions, templates, dynamic inputs, and message placeholders | Planned |
 | `04-runnables-and-composition` | Runnable interface, sequences, parallel composition, configuration, retries | Planned |
 | `05-structured-output` | Schemas, validation, native and tool-based approaches, parsing failures | Planned |
@@ -39,7 +39,10 @@ have folders so far. The remaining entries describe future work.
 ## Current checkpoint
 
 - Orientation and Models explanations are available, with [interactive Models diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html).
-- The [first direct SDK experiment](01-models/experiments/01-provider-specific-baseline/README.md) is ready for one provider. No model calls have been recorded yet.
+- The [direct SDK experiment](01-models/experiments/01-provider-specific-baseline/README.md) was run with Groq and `openai/gpt-oss-20b`.
+- The [LangChain model wrapper experiment](01-models/experiments/02-langchain-model-wrapper/README.md) repeated the same prompt and model through `ChatGroq`.
+- We observed a provider SDK `ChatCompletion` in the baseline and a LangChain `AIMessage` in the wrapper experiment.
+- The next topic is Messages, where we will study the message abstraction that Experiment 02 exposed.
 
 ## Boundaries
 
@@ -68,6 +71,7 @@ approved product architecture. Record concrete decisions within each topic.
 - [LangChain overview](https://docs.langchain.com/oss/python/langchain/overview)
 - [Repository conventions](../LEARNING_METHOD.md)
 - [Begin orientation](00-orientation/README.md)
+- [Continue with Models](01-models/README.md)
 
 Update this page when a topic is completed, using the agreed Git checkpoint
 convention. Preserve useful misconceptions and conclusions in the topic that
