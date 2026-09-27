@@ -1,0 +1,60 @@
+site_name: Agentic AI Learning
+site_description: Clear explanations, small experiments, and interactive diagrams for learning agentic AI.
+docs_dir: .website-build/content
+site_dir: .website-build/site
+use_directory_urls: false
+hooks:
+  - website/hooks.py
+theme:
+  name: material
+  language: en
+  font: false
+  logo: assets/favicon.svg
+  favicon: assets/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark theme
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light theme
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - toc:
+      permalink: true
+extra_css:
+  - assets/extra.css
+validation:
+  links:
+    unrecognized_links: warn
+    not_found: warn
+    anchors: warn

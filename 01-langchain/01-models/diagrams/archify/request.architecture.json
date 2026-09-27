@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Models: two routes to a provider",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "langchain-route",
+        "label": "Through LangChain",
+        "focus": [
+          "python-app",
+          "langchain-interface",
+          "provider-integration",
+          "hosted-service"
+        ],
+        "note": "Follow the shared model interface to the provider integration and hosted service."
+      },
+      {
+        "id": "direct-route",
+        "label": "Direct provider SDK",
+        "focus": [
+          "python-app",
+          "direct-sdk",
+          "hosted-service"
+        ],
+        "note": "Call the same provider through its own SDK."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "python-app",
+      "type": "frontend",
+      "label": "Python application",
+      "sublabel": "Input and model settings",
+      "pos": [
+        50,
+        260
+      ],
+      "size": [
+        200,
+        80
+      ]
+    },
+    {
+      "id": "direct-sdk",
+      "type": "backend",
+      "label": "Provider SDK",
+      "sublabel": "Direct client calls",
+      "pos": [
+        450,
+        80
+      ],
+      "size": [
+        210,
+        80
+      ]
+    },
+    {
+      "id": "langchain-interface",
+      "type": "backend",
+      "label": "LangChain interface",
+      "sublabel": "Shared model methods",
+      "pos": [
+        450,
+        440
+      ],
+      "size": [
+        210,
+        80
+      ]
+    },
+    {
+      "id": "provider-integration",
+      "type": "backend",
+      "label": "Provider integration",
+      "sublabel": "Provider-specific adapter",
+      "pos": [
+        800,
+        440
+      ],
+      "size": [
+        220,
+        80
+      ]
+    },
+    {
+      "id": "hosted-service",
+      "type": "cloud",
+      "label": "Provider service",
+      "sublabel": "API and hosted model",
+      "pos": [
+        1110,
+        260
+      ],
+      "size": [
+        220,
+        80
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "app-to-langchain",
+      "from": "python-app",
+      "to": "langchain-interface",
+      "label": "invoke",
+      "variant": "emphasis"
+    },
+    {
+      "id": "interface-to-integration",
+      "from": "langchain-interface",
+      "to": "provider-integration",
+      "label": "delegate",
+      "variant": "emphasis"
+    },
+    {
+      "id": "integration-to-provider",
+      "from": "provider-integration",
+      "to": "hosted-service",
+      "label": "provider request",
+      "variant": "emphasis"
+    },
+    {
+      "id": "app-to-sdk",
+      "from": "python-app",
+      "to": "direct-sdk",
+      "label": "SDK call"
+    },
+    {
+      "id": "sdk-to-provider",
+      "from": "direct-sdk",
+      "to": "hosted-service",
+      "label": "provider request"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Same provider, different interface",
+      "items": [
+        "The integration may itself use a provider SDK.",
+        "LangChain does not replace or host the model."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "The response comes back",
+      "items": [
+        "Results return through the chosen library to the application.",
+        "A completed LangChain chat call returns an AIMessage."
+      ]
+    }
+  ]
+}

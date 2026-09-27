@@ -29,3 +29,6 @@ Thumbs.db
 Desktop.ini
 
 # Keep uv.lock, curated outputs, and portable VS Code settings in Git.
+
+# Generated website output
+/.website-build/

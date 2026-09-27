@@ -1,0 +1,22 @@
+{
+  "01-langchain/01-models": {
+    "title": "Models",
+    "diagrams": [
+      {
+        "title": "The request journey",
+        "file": "diagrams/archify/request.html",
+        "text": "An application can call the provider SDK directly or use LangChain's model interface and provider integration. The provider still runs the hosted model. Click the nodes to explore their roles."
+      },
+      {
+        "title": "Invoke, stream, and batch",
+        "file": "diagrams/archify/delivery.html",
+        "text": "Invoke returns a complete response. Stream delivers response chunks as they become available. Batch handles several inputs. The event order here is illustrative; it does not compare actual response times."
+      },
+      {
+        "title": "Inside an AIMessage",
+        "file": "diagrams/archify/response.html",
+        "text": "A model response can contain content, tool-call requests, and metadata. Available fields depend on the model and integration. A tool-call request describes what to call; the application still needs to execute the tool."
+      }
+    ]
+  }
+}

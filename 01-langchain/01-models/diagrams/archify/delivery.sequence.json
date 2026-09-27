@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Models: invoke, stream and batch",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1060,
+      790
+    ],
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "calling-code",
+      "type": "frontend",
+      "label": "Application",
+      "sublabel": "Python code"
+    },
+    {
+      "id": "chat-interface",
+      "type": "backend",
+      "label": "Chat model",
+      "sublabel": "LangChain interface"
+    },
+    {
+      "id": "model-service",
+      "type": "cloud",
+      "label": "Provider",
+      "sublabel": "Hosted model"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 270,
+      "label": "invoke()"
+    },
+    {
+      "from": 285,
+      "to": 475,
+      "label": "stream()"
+    },
+    {
+      "from": 495,
+      "to": 705,
+      "label": "batch()"
+    }
+  ],
+  "messages": [
+    {
+      "id": "invoke-input",
+      "from": "calling-code",
+      "to": "chat-interface",
+      "y": 160,
+      "label": "invoke(input)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "invoke-request",
+      "from": "chat-interface",
+      "to": "model-service",
+      "y": 190,
+      "label": "provider request"
+    },
+    {
+      "id": "invoke-result",
+      "from": "model-service",
+      "to": "chat-interface",
+      "y": 220,
+      "label": "complete output",
+      "variant": "return"
+    },
+    {
+      "id": "invoke-message",
+      "from": "chat-interface",
+      "to": "calling-code",
+      "y": 250,
+      "label": "AIMessage",
+      "variant": "return"
+    },
+    {
+      "id": "stream-input",
+      "from": "calling-code",
+      "to": "chat-interface",
+      "y": 300,
+      "label": "stream(input)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "stream-request",
+      "from": "chat-interface",
+      "to": "model-service",
+      "y": 330,
+      "label": "streaming request"
+    },
+    {
+      "id": "stream-event-one",
+      "from": "model-service",
+      "to": "chat-interface",
+      "y": 360,
+      "label": "content delta",
+      "variant": "return"
+    },
+    {
+      "id": "stream-chunk-one",
+      "from": "chat-interface",
+      "to": "calling-code",
+      "y": 390,
+      "label": "AIMessageChunk",
+      "variant": "return"
+    },
+    {
+      "id": "stream-event-next",
+      "from": "model-service",
+      "to": "chat-interface",
+      "y": 420,
+      "label": "more deltas, then end",
+      "variant": "return"
+    },
+    {
+      "id": "stream-chunk-next",
+      "from": "chat-interface",
+      "to": "calling-code",
+      "y": 450,
+      "label": "more chunks, then end",
+      "variant": "return"
+    },
+    {
+      "id": "batch-input",
+      "from": "calling-code",
+      "to": "chat-interface",
+      "y": 510,
+      "label": "batch([A, B])",
+      "variant": "emphasis"
+    },
+    {
+      "id": "batch-request-a",
+      "from": "chat-interface",
+      "to": "model-service",
+      "y": 545,
+      "label": "request A"
+    },
+    {
+      "id": "batch-request-b",
+      "from": "chat-interface",
+      "to": "model-service",
+      "y": 575,
+      "label": "request B"
+    },
+    {
+      "id": "batch-result-b",
+      "from": "model-service",
+      "to": "chat-interface",
+      "y": 610,
+      "label": "B completes first",
+      "variant": "return"
+    },
+    {
+      "id": "batch-result-a",
+      "from": "model-service",
+      "to": "chat-interface",
+      "y": 640,
+      "label": "A completes next",
+      "variant": "return"
+    },
+    {
+      "id": "batch-result-list",
+      "from": "chat-interface",
+      "to": "calling-code",
+      "y": 685,
+      "label": "[result A, result B]",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Illustrative order",
+      "items": [
+        "Vertical position shows event order, not measured time.",
+        "Streaming can show partial output before generation ends."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Batch behavior",
+      "items": [
+        "This illustrates separate concurrent requests, not a provider bulk API.",
+        "Async variants do not by themselves make separate calls concurrent."
+      ]
+    }
+  ]
+}

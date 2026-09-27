@@ -1,100 +1,128 @@
 # 01 — Models
 
-**Status:** experiment plan prepared; implementation and observations pending.
+[Home](../../README.md) · [LangChain chapters](../README.md) · [Previous: Orientation](../00-orientation/README.md)
 
-## 1. The question we will investigate
+## On this page
 
-What changes when we place a common model interface between our application
-and a provider? We will keep the first task small so that input, configuration,
-and response differences remain visible.
+- [What exactly is a model here?](#what-exactly-is-a-model-here)
+- [Where LangChain fits](#where-langchain-fits)
+- [One answer, a stream, or several answers](#one-answer-a-stream-or-several-answers)
+- [What comes back from a model](#what-comes-back-from-a-model)
+- [Can we swap providers easily?](#can-we-swap-providers-easily)
+- [Examples we will explore](#examples-we-will-explore)
+- [Interview questions](#interview-questions)
+- [References](#references)
 
-## 2. Starting concept
+## What exactly is a model here?
 
-A model interface gives application code a consistent way to request a response.
-The provider still determines the available models, capabilities, and service
-behavior. Our experiments should reveal both the shared interface and its limits.
+Think of the model as the part that produces a response from the input we give it. The **provider** makes that model available, usually through an API. Its **SDK** is one way for our Python code to call that API.
 
-**Interview insight:** Does a shared interface make providers interchangeable?
+For a first experiment, we could send a simple question and print the answer. The interesting part is not only the sentence we see on screen. We also want to understand how we sent the request and what the response object contains.
 
-Not completely. Matching method names does not guarantee matching features,
-configuration, output details, or behavior. We will support this answer with a
-concrete comparison rather than leaving it as a general claim.
+## Where LangChain fits
 
-## 3. Planned experiments, in order
+LangChain puts a common model interface between our application and supported providers. We can create a chat model through `init_chat_model` or through a provider-specific class. Either way, the provider integration does the work of connecting that interface to the provider.
 
-The paths below are reserved names, not existing folders. Create each when we
-are ready to implement it. No provider or model has been chosen yet.
+The shape below uses placeholders because a provider and model have not been selected for the practical examples yet. It is **illustrative code**, not an experiment that has already been run:
 
-| # | Future folder under `experiments/` | Question | Status |
-|---|---|---|---|
-| 01 | `01-provider-specific-baseline` | What do request and response look like with the provider SDK? | Planned |
-| 02 | `02-langchain-model-abstraction` | What changes through the LangChain interface? | Planned |
-| 03 | `03-provider-swap` | Which parts stay stable when the provider changes? | Planned; second provider access needed |
-| 04 | `04-model-configuration` | Which settings affect behavior, and which depend on the provider? | Planned |
-| 05 | `05-invoke-vs-stream` | How does receiving chunks change response handling? | Planned |
-| 06 | `06-batch-and-async` | How do multiple inputs and asynchronous calls change execution? | Planned |
-| 07 | `07-inspect-model-response` | What is present beyond the visible answer text? | Planned |
+```python
+from langchain.chat_models import init_chat_model
 
-Use `main.py` for a simple experiment. Put its question, command, and findings
-here unless the experiment needs a longer explanation of its own.
+model = init_chat_model("your-model-name", model_provider="your-provider")
+reply = model.invoke("Explain an API in one sentence.")
+print(reply.content)
+```
 
-For each comparison, record the provider, model, relevant settings, input,
-package versions, and what actually happened. A model-name change alone is not
-enough to explain a behavioral difference. If second-provider access is missing,
-record that limitation rather than claiming portability was tested.
+To run it, we will choose a real model, install its provider integration, and configure the required credentials. We can then compare this call with the same task through the provider SDK.
 
-## 4. What we will inspect
+Here is the route each call takes:
 
-Start with basic invocation. Then inspect response type, content, available usage
-metadata, and streaming chunks. More advanced capabilities—multimodal content,
-reasoning blocks, model profiles—can be explored when supported and useful.
-Message semantics get their own treatment in the following topic.
+```mermaid
+flowchart TB
+    app["Our application"] --> sdk["Provider SDK"]
+    app --> interface["LangChain model interface"]
+    interface --> integration["Provider integration"]
+    sdk --> provider["Hosted provider model"]
+    integration --> provider
+    classDef application fill:#17334f,stroke:#102338,color:#ffffff
+    classDef path fill:#087e9a,stroke:#075b70,color:#ffffff
+    classDef target fill:#b45512,stroke:#803a0c,color:#ffffff
+    class app application
+    class sdk,interface,integration path
+    class provider target
+```
 
-There are no observed results yet. Add them after running the experiments.
+The two routes are alternatives for our application. An integration may use a provider SDK internally; the point here is where **our code** interacts with each route.
 
-## 5. Compare and break
+[Explore the three interactive Models diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html) for the request journey, delivery methods, and response fields.
 
-Try a configuration the selected provider does not support. Compare its failure
-with an application input error. Check whether metadata is present before relying
-on it. Explain why a streamed partial response needs different handling from a
-complete one. Record actual behavior rather than predicting exact exceptions.
+**Interview angle:** A common interface helps us write similar calling code. It does not mean every provider offers the same features.
 
-## 6. Consolidated interview questions
+## One answer, a stream, or several answers
 
-These are initial study prompts. Expand their answers with experimental evidence.
+The model interface gives us different ways to receive results:
 
-| Category | Question | A useful answer should address |
-|---|---|---|
-| Fundamentals | What does a model abstraction standardize? | Invocation and response interfaces; provider-specific limits |
-| Comparison | What changed between the SDK and LangChain versions? | A concrete input, configuration, and output comparison |
-| Practical | When would you use streaming? | Incremental delivery and the added handling of chunks or interruptions |
-| Internals | Is an AI response just a string? | Inspect the actual response object, content, and available metadata |
-| Failure | What if a provider does not support a setting? | Locate the source of rejection and document the observed failure |
-| Scenario | A provider swap breaks structured responses; why? | Capability and schema support need verification beyond method names |
-| Follow-up | How do batch and async differ? | Multiple inputs versus non-blocking execution; inspect concurrency behavior |
+| Method | What we ask for | What our code handles |
+| --- | --- | --- |
+| `invoke(input)` | One input | One complete response. |
+| `stream(input)` | One input | Chunks arriving over time. |
+| `batch(inputs)` | Several independent inputs | A set of complete responses. |
+| `ainvoke`, `astream`, `abatch` | The corresponding work in async code | Awaited results or an async stream. |
 
-Add short interview insights beside individual experiment findings. Keep the
-consolidated questions here so revision does not require opening every script.
+Streaming is useful when we want to show progress before the whole answer is ready. Its chunks need to be assembled or handled as they arrive; an interrupted stream may leave a partial answer. `batch` runs independent model calls with client-side parallelism. It is different from a provider's separate batch API. Concurrency and rate limits matter once we try larger batches.
 
-## 7. Product relevance
+**Interview angle:** “Batch” describes handling several inputs. “Async” describes how the application waits for work. They answer different questions, and we can combine them.
 
-**Decision: Maybe later.** A stable invocation boundary could help the PV product
-compare models for synthetic narrative extraction. Adoption requires evidence
-about extraction quality, capabilities, operational needs, and cost.
+## What comes back from a model
 
-## 8. Completion check
+With a chat model, `invoke` normally returns an `AIMessage`, not just a Python string. Its visible answer may be in `content`, but there can be more to inspect:
 
-- [ ] Run and explain the planned experiments, documenting any access limitation.
-- [ ] Record useful outputs, internals, comparisons, and failure observations.
-- [ ] Answer the interview questions with examples from those experiments.
-- [ ] Write key takeaways and revisit the product-relevance decision.
-- [ ] Update the module status and commit: `learn(langchain): complete model fundamentals`.
-- [ ] Push the checkpoint through GitHub Desktop.
+| Field or idea | Why it matters |
+| --- | --- |
+| `content` | The answer content; it may have more than a simple text form. |
+| `tool_calls` | Requests to call tools; these are not the tool's results. |
+| `response_metadata` | Provider or model details, when available. |
+| `usage_metadata` | Token usage details, when the integration supplies them. |
 
-## 9. References and next topic
+`stream` returns `AIMessageChunk` objects, which represent pieces of the response. We should not assume every chunk contains a complete sentence or that all providers return identical metadata.
+
+Imagine the model requests `get_weather(location="Pune")`. That request may appear in `tool_calls`. Our application or an agent loop still has to run `get_weather`, handle any failure, and send its result back if another model response is needed.
+
+**Interview angle:** If someone asks whether a model response is “just text,” explain the response object and why ignoring tool calls or metadata can hide useful behavior.
+
+## Can we swap providers easily?
+
+We can often keep the `invoke` call while changing the model configuration or integration. That is useful for comparison, but it is not a promise of identical output.
+
+Providers can differ in available models, settings, tool calling, structured output, streaming details, and response metadata. We will check a feature against the selected provider rather than assume that a shared method name guarantees support.
+
+## Examples we will explore
+
+These are the practical comparisons for this chapter. **They are planned; no model calls or measurements have been made yet.**
+
+1. Call one provider directly through its SDK, then make the same request through LangChain.
+2. Inspect the complete response, streamed chunks, and results for several inputs.
+3. Change model settings and see which ones the chosen provider actually supports.
+4. Try a second provider if access is available, and describe what stayed the same and what changed.
+5. Inspect a useful failure, such as an unsupported setting or an interrupted stream.
+
+We will record the real model, versions, inputs, and results once we run these examples. That will let us separate what the interface promises from what we actually observed.
+
+## Interview questions
+
+| Question | Short answer |
+| --- | --- |
+| What does LangChain standardize for models? | A common way to initialize, call, and handle supported chat models, with provider integrations behind the interface. |
+| How is `stream` different from `invoke`? | `invoke` returns a complete message; `stream` provides chunks that the application handles over time. |
+| Is `batch` the same as async? | No. Batch is about multiple inputs; async is about waiting without blocking the same way. |
+| Is an `AIMessage` only the answer text? | No. It can also carry tool-call requests and available metadata. |
+| Has a tool run when `tool_calls` is present? | No. A client-side tool still has to be executed by the application or agent loop. |
+| Will the same code behave identically with another provider? | No. Check supported features, configuration, output details, and observed behavior. |
+
+## References
 
 - [LangChain models](https://docs.langchain.com/oss/python/langchain/models)
-- [LangChain installation](https://docs.langchain.com/oss/python/langchain/install)
-- Add the selected provider's official SDK documentation when it is chosen.
+- [LangChain messages](https://docs.langchain.com/oss/python/langchain/messages)
+- [LangChain installation and provider integrations](https://docs.langchain.com/oss/python/langchain/install)
 
-Next: `02-messages`. Create that topic when model fundamentals are complete.
+[Back to top](README.md) · Next chapter: Messages

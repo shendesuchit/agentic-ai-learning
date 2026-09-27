@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Models — Visual Guide</title>
+  <style>
+    :root {color-scheme:light dark;--page:light-dark(#f7f9fc,#111827);--ink:light-dark(#172033,#e5edf9);--line:light-dark(#d9e1ec,#364152);--selected:light-dark(#e3edff,#273954);--secondary:light-dark(#51617a,#acb9cf);}
+    * {box-sizing:border-box;}
+    body {margin:0;background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+    header {padding:18px 24px 12px;border-bottom:1px solid var(--line);}
+    .title-row {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    h1 {font-size:21px;margin:0;font-weight:600;}
+    .open {font-size:13px;color:var(--secondary);}
+    nav {display:flex;flex-wrap:wrap;gap:8px;margin-top:13px;}
+    nav a {text-decoration:none;color:var(--ink);padding:8px 14px;border:1px solid var(--line);border-radius:7px;}
+    nav a[aria-current="page"] {background:var(--selected);border-color:var(--secondary);}
+    a:focus-visible {outline:3px solid var(--secondary);outline-offset:3px;}
+    iframe {display:block;width:100%;height:calc(100vh - 135px);min-height:720px;border:0;}
+    @media(max-width:600px){header{padding:14px;}nav a{flex:1 1 100%;}iframe{height:900px;}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-row"><h1>Models · Visual guide</h1><a class="open" id="open-chapter" href="request.html" target="_blank" rel="noopener">Open this diagram in a new tab ↗</a></div>
+    <nav aria-label="Model diagrams">
+      <a href="request.html" target="models-diagram" data-section="request" aria-current="page">1 · Request journey</a>
+      <a href="delivery.html" target="models-diagram" data-section="delivery">2 · Invoke, stream and batch</a>
+      <a href="response.html" target="models-diagram" data-section="response">3 · Inside AIMessage</a>
+    </nav>
+  </header>
+  <iframe id="models-diagram" name="models-diagram" src="request.html" title="Request journey — Archify diagram"></iframe>
+  <script>
+    const links=[...document.querySelectorAll('[data-section]')];
+    const frame=document.getElementById('models-diagram');
+    const openLink=document.getElementById('open-chapter');
+    const labels={request:'Request journey',delivery:'Invoke, stream and batch',response:'Inside AIMessage'};
+    function selectChapter(){
+      const requested=location.hash.slice(1);
+      const key=Object.hasOwn(labels,requested)?requested:'request';
+      const filename=key+'.html';
+      if(frame.getAttribute('src')!==filename)frame.setAttribute('src',filename);
+      frame.title=labels[key]+' — Archify diagram';openLink.href=filename;
+      for(const link of links){if(link.dataset.section===key)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+    }
+    for(const link of links)link.addEventListener('click',event=>{event.preventDefault();location.hash=link.dataset.section;selectChapter();});
+    window.addEventListener('hashchange',selectChapter);selectChapter();
+  </script>
+</body>
+</html>

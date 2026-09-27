@@ -1,0 +1,30 @@
+{
+  "schema_version":1,
+  "diagram_type":"architecture",
+  "meta":{"title":"Models: reading an AIMessage","locale":"en","quality_profile":"showcase","views":[
+    {"id":"content-view","label":"Read content","focus":["returned-message","content-field","content-reader"],"note":"Read text or structured content blocks."},
+    {"id":"tools-view","label":"Handle tool requests","focus":["returned-message","tools-field","tool-handler"],"note":"A client-side tool request still needs application code to execute it."},
+    {"id":"metadata-view","label":"Inspect metadata","focus":["returned-message","metadata-fields","metadata-reader"],"note":"Usage and response metadata depend on the provider integration."}
+  ]},
+  "components":[
+    {"id":"returned-message","type":"backend","label":"AIMessage","sublabel":"Completed chat response","pos":[40,260],"size":[190,80]},
+    {"id":"content-field","type":"backend","label":"Content","sublabel":"Text or content blocks","pos":[420,70],"size":[200,80]},
+    {"id":"tools-field","type":"backend","label":"Tool calls","sublabel":"Requested operations","pos":[420,260],"size":[200,80]},
+    {"id":"metadata-fields","type":"backend","label":"Metadata","sublabel":"Usage and response details","pos":[420,450],"size":[200,80]},
+    {"id":"content-reader","type":"frontend","label":"Display or process","sublabel":"Read the generated content","pos":[850,70],"size":[210,80]},
+    {"id":"tool-handler","type":"backend","label":"Tool dispatcher","sublabel":"Validate and execute","pos":[850,260],"size":[210,80]},
+    {"id":"metadata-reader","type":"frontend","label":"Inspect or record","sublabel":"Usage and completion","pos":[850,450],"size":[210,80]}
+  ],
+  "connections":[
+    {"id":"message-content-field","from":"returned-message","to":"content-field","variant":"emphasis"},
+    {"id":"message-tools-field","from":"returned-message","to":"tools-field"},
+    {"id":"message-metadata-fields","from":"returned-message","to":"metadata-fields"},
+    {"id":"content-application","from":"content-field","to":"content-reader","label":"read","variant":"emphasis"},
+    {"id":"tools-application","from":"tools-field","to":"tool-handler","label":"dispatch"},
+    {"id":"metadata-application","from":"metadata-fields","to":"metadata-reader","label":"inspect"}
+  ],
+  "cards":[
+    {"dot":"emerald","title":"Fields and their consumers","items":["Branches show field access, not three mandatory execution steps.","Field names label the first branches; repeating them on arrows adds no meaning."]},
+    {"dot":"amber","title":"Check before using a field","items":["Metadata and tool calls may be absent.","A client-side tool request is not proof of execution."]}
+  ]
+}

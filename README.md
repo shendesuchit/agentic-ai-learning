@@ -4,15 +4,17 @@ This is my learning laboratory for understanding how agentic AI systems work.
 The aim is to explain each idea clearly, build a small experiment, and understand
 what happens when its assumptions fail.
 
-**Current checkpoint:** repository starter prepared; local setup and learning
-completion still need to be confirmed. Begin with LangChain orientation.
+**Current checkpoint:** Orientation and Models are ready to read. Model experiments
+have not been run yet.
+
+**[Explore the learning website](https://shendesuchit.github.io/agentic-ai-learning/)** for chapter navigation and interactive Models diagrams.
 
 ## Start here
 
-1. Follow [SETUP.md](SETUP.md) to open this project in VS Code and configure GitHub Desktop.
-2. Read the [learning method and repository conventions](LEARNING_METHOD.md).
-3. Open the [LangChain learning map](01-langchain/README.md).
-4. Begin [00 — Orientation](01-langchain/00-orientation/README.md).
+1. Begin with [00 — Orientation](01-langchain/00-orientation/README.md).
+2. Continue with [01 — Models](01-langchain/01-models/README.md) and its [interactive diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html).
+3. Use the [LangChain learning map](01-langchain/README.md) to see the topic order.
+4. If you are working locally, [SETUP.md](SETUP.md) covers VS Code and GitHub Desktop.
 
 ## How we will learn
 

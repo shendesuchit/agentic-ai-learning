@@ -1,0 +1,41 @@
+:root {
+  --md-primary-fg-color: #17334f;
+  --md-primary-fg-color--light: #25587a;
+  --md-primary-fg-color--dark: #102338;
+  --md-accent-fg-color: #087e9a;
+  --learning-border: #d8e1ea;
+  --learning-panel: #f4f7fb;
+}
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #121b28;
+  --md-default-fg-color: #e1e9f5;
+  --md-default-fg-color--light: #b7c5d8;
+  --md-primary-fg-color: #182e46;
+  --md-accent-fg-color: #6bd3e6;
+  --learning-border: #34445a;
+  --learning-panel: #1a2839;
+}
+.md-grid { max-width: 88rem; }
+.md-typeset { font-size: .84rem; line-height: 1.75; }
+.md-typeset h1 { color: var(--md-default-fg-color); font-weight: 720; letter-spacing: -.025em; margin-bottom: .6em; }
+.md-typeset h2 { font-weight: 650; letter-spacing: -.015em; padding-top: .35em; }
+.md-header { box-shadow: none; border-bottom: 3px solid #24b8d3; }
+.md-header__title { font-weight: 650; }
+.md-nav { font-size: .72rem; }
+.md-typeset table:not([class]) { font-size: .77rem; border-radius: .3rem; }
+.md-typeset table:not([class]) th { background: var(--learning-panel); }
+.md-typeset a { text-underline-offset: .2em; }
+.md-typeset a:hover { text-decoration: underline; }
+.md-typeset .visual-link { display: block; background: var(--learning-panel); border-left: 4px solid #159bb7; padding: .8rem 1rem; margin: 1.25rem 0; }
+.md-typeset .diagram-frame { display: block; width: 100%; height: 48rem; max-height: 1100px; border: 1px solid var(--learning-border); border-radius: .35rem; background: var(--learning-panel); }
+.md-typeset .diagram-caption { font-size: .76rem; color: var(--md-default-fg-color--light); }
+.md-typeset .diagram-fallback { display: none; }
+@media (max-width: 760px) {
+  .md-typeset .diagram-frame { display: none; }
+  .md-typeset .diagram-fallback { display: block; padding: .8rem; background: var(--learning-panel); border: 1px solid var(--learning-border); border-radius: .3rem; }
+  .md-typeset { font-size: .85rem; }
+}
+@media print {
+  .md-typeset .diagram-frame { display: none; }
+  .md-typeset .diagram-fallback { display: block; }
+}

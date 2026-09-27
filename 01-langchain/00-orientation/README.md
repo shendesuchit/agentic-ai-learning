@@ -1,118 +1,85 @@
 # 00 — Orientation
 
-**Status:** introductory reading prepared; learner review and checkpoint pending.
+[Home](../../README.md) · [LangChain chapters](../README.md) · [Next: Models](../01-models/README.md)
 
-## 1. The problem
+## On this page
 
-Imagine starting with a script that sends a question to one model provider.
-That script may be quite sufficient. As the application grows, however, you may
-need message history, tool calls, validated responses, streaming, and a loop that
-decides whether more work is needed. Each addition creates coordination work.
+- [Why do we need LangChain?](#why-do-we-need-langchain)
+- [Model, tool, and agent](#model-tool-and-agent)
+- [Where the packages fit](#where-the-packages-fit)
+- [When a direct SDK is enough](#when-a-direct-sdk-is-enough)
+- [Interview questions](#interview-questions)
+- [References](#references)
 
-LangChain offers common interfaces and an agent framework to help with that
-work. We should understand each responsibility before handing it to an abstraction.
+## Why do we need LangChain?
 
-**Interview insight:** Why might a direct provider SDK be the right starting point?
+Say we have a short Python script: send a question to a model and print the answer. A provider's SDK can do that perfectly well. There is no reason to add a framework just for the sake of it.
 
-It exposes the provider's behavior directly and keeps a small experiment easy to
-inspect. It also gives us a baseline for judging what a framework changes.
-Follow-up: when would repeated coordination code justify a higher-level interface?
+Now imagine we want the assistant to remember earlier messages, call a tool for fresh information, return a predictable format, and handle a failed call. Our script starts doing more coordination work. LangChain gives us common interfaces and building blocks for some of that work.
 
-## 2. A working mental model
+The useful question is always: **what did the framework handle, and what does our application still have to handle?** Choosing the right tools, checking an answer, and deciding what a good result looks like still belong to us.
 
-A model generates a response. A tool is an operation the application can make
-available. An agent combines model decisions with a loop that can execute tools
-and continue until it can respond or must stop.
+**Interview angle:** If the task is only one model call, explain why a direct SDK can be the clearer choice. If the task has several connected steps, explain which repeated work a framework can help with.
 
-The framework helps coordinate these parts. It does not make the model infallible
-or decide whether the application's requirements have been satisfied.
+## Model, tool, and agent
 
-**Interview insight:** Does a model's request to call a tool mean the tool ran?
+These three words often come together, but they do different jobs:
 
-For a client-side tool, no. Application or agent code must execute the request
-and return the result. Keep that distinction in mind when we reach tool calling.
-Provider-hosted tools require a separate discussion of where execution occurs.
+| Part | Its job |
+| --- | --- |
+| **Model** | Reads the input and produces a response. It may also request a tool call. |
+| **Tool** | Performs a specific operation, such as looking up information or running a calculation. |
+| **Agent** | Coordinates a loop: ask the model, handle any requested tools, give results back, and decide when to stop. |
 
-## 3. Read the ecosystem by responsibility
+Suppose someone asks for the weather in Pune **right now**. A model should not invent live weather. If we make a weather tool available, a possible flow is:
 
-| Component | Responsibility to understand |
-|---|---|
-| Provider SDK | Direct access to a provider's API and features |
-| `langchain-core` | Shared abstractions, including messages and Runnables |
-| Provider integration package | Connects a provider to LangChain interfaces |
-| `langchain` | Higher-level building blocks and agent APIs |
-| LangGraph | Stateful workflow and agent orchestration underneath LangChain agents |
-| LangSmith | Tools for inspecting and evaluating application behavior |
-| Deep Agents | A higher-level agent framework with capabilities for more involved tasks |
+1. The application sends the question and the tool description to the model.
+2. The model requests the weather tool with a location.
+3. The application (or agent code) runs that tool.
+4. The tool result goes back to the model so it can answer.
 
-These are related tools, not interchangeable names. Our immediate job is to
-understand the boundaries; we do not need to install or master every component.
+The important bit: **a request to use a client-side tool is not the same as running it**. We will look at provider-hosted tools separately, because the execution boundary can be different.
 
-**Interview insight:** Why study a manual loop before `create_agent`?
+An agent can decide whether it needs another tool call. A fixed sequence of known steps may work without an agent at all.
 
-Writing the loop makes message updates, tool execution, failures, and stopping
-conditions visible. We can then explain which responsibilities the framework
-takes over. This is our teaching sequence, not a prerequisite imposed by the API.
+**Interview angle:** When asked whether the model “calls the tool,” distinguish the model's request from the application's execution. Then explain who handles failures and when the loop ends.
 
-## 4. A comparison exercise
+## Where the packages fit
 
-Consider two hypothetical tasks:
+The LangChain ecosystem has several names. Here is the simple map:
 
-1. A script asks one model to rewrite a sentence.
-2. An assistant may look up several records, inspect results, and decide whether
-   another lookup is necessary.
+| Name | What it is for |
+| --- | --- |
+| Provider SDK | Talks directly to a specific provider's API. |
+| `langchain-core` | Shared interfaces, including messages and Runnables. |
+| Provider integration | Connects a provider to those interfaces. |
+| `langchain` | Higher-level components, including agents. |
+| LangGraph | More explicit control over stateful workflows and agent orchestration. LangChain agents use it underneath. |
+| LangSmith | Inspecting, tracing, and evaluating application behavior. |
+| Deep Agents | Higher-level agent capabilities for more involved tasks. |
 
-For each, explain what coordination code you would need. Which task benefits
-more from an agent loop? What would still need checking even with a framework?
-No code is needed for this exercise.
+We do not need to install the whole list to understand the first model call. Start with the responsibility; choose the package when that responsibility actually comes up.
 
-## 5. Common misconceptions
+## When a direct SDK is enough
 
-- Installing a framework does not create an agent by itself.
-- A shared model interface does not guarantee identical provider behavior.
-- LangChain and LangGraph have different scopes even when they work together.
-- A convincing response is not evidence that the system behaved correctly.
+A direct SDK keeps provider features visible and is easy to understand for one small task. LangChain becomes interesting when a common interface or coordinated pieces make the application simpler. It does add another layer, so we should compare a direct call with a LangChain call before assuming it helps.
 
-## 6. Consolidated interview questions
+That comparison begins in [Models](../01-models/README.md). We will use the same small task on both sides, inspect the actual response, and note where the common interface stops being common.
 
-Try each answer aloud, then use the guidance to check the reasoning.
+## Interview questions
 
-| Question | Answer guidance | Revisit |
-|---|---|---|
-| Why use a framework for model applications? | Explain the recurring coordination work and the cost of an abstraction. | Sections 1 and 2 |
-| When is a provider SDK sufficient? | Use the single-call example; explain simplicity and direct feature access. | Sections 1 and 4 |
-| How do a model, tool, and agent differ? | Separate generation, executable operations, and the control loop. | Section 2 |
-| Has a requested client-side tool already run? | No; distinguish a request from application execution and its returned result. | Section 2 |
-| Why are provider integrations separate? | Separate common interfaces from provider-specific implementation. | Section 3 |
-| How do LangChain and LangGraph relate? | Describe abstraction level and underlying orchestration. | Section 3 |
-| Does switching an interface guarantee portability? | Discuss feature support, response details, and behavior that must be checked. | Section 5 |
-| What does a framework still leave to the developer? | Requirements, tool design, validation, failure handling, and assessment of results. | Sections 2 and 4 |
+| Question | Short answer |
+| --- | --- |
+| Why use LangChain if I can call a provider directly? | Use it when its interfaces or orchestration remove repeated coordination work. A simple direct call may need nothing more. |
+| Is a model the same as an agent? | No. The model generates or requests; the agent manages a loop around those responses. |
+| Has a tool already run when the model requests it? | For a client-side tool, no. Application or agent code still runs it and returns the result. |
+| Does adding LangChain guarantee a correct answer? | No. The application still needs suitable tools, validation, and a way to assess results. |
+| How does LangGraph relate to LangChain agents? | LangChain provides a higher-level agent interface; LangGraph underlies its orchestration and offers more direct control. |
 
-## 7. Product relevance
-
-**Decision: Maybe later.** The PV platform may need structured extraction and
-evidence tools. Orientation helps us choose responsibilities sensibly; it does
-not yet establish that any particular framework is required.
-
-## 8. Completion check
-
-- [ ] Explain the ecosystem table without reading its descriptions.
-- [ ] Discuss the two comparison tasks and justify the level of abstraction.
-- [ ] Answer the interview questions and record any corrections in this README.
-- [ ] Confirm or revise the product-relevance reasoning.
-- [ ] Update the module status and commit: `learn(langchain): complete orientation`.
-- [ ] Push the checkpoint through GitHub Desktop.
-
-## 9. References
+## References
 
 - [LangChain overview](https://docs.langchain.com/oss/python/langchain/overview)
-- [Package installation and integrations](https://docs.langchain.com/oss/python/langchain/install)
 - [LangChain model interface](https://docs.langchain.com/oss/python/langchain/models)
+- [LangChain installation and integrations](https://docs.langchain.com/oss/python/langchain/install)
 
-These are starting references. We will inspect exact APIs when the corresponding
-experiment begins.
-
-## 10. Next
-
-[01 — Models](../01-models/README.md): establish a direct provider baseline,
-then compare it with LangChain's model abstraction.
+[Back to top](README.md) · [Continue to Models](../01-models/README.md)
