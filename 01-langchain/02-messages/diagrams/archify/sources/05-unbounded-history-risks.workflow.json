@@ -1,0 +1,123 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Messages: risks of unbounded history",
+    "subtitle": "Why replaying every old turn forever becomes a production problem",
+    "locale": "en",
+    "animation": "trace",
+    "visual_preset": "classic",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "core-path",
+        "label": "Core path",
+        "focus": [
+          "history_growth",
+          "context_pressure",
+          "managed_context"
+        ],
+        "note": "More retained history means more context pressure; production systems eventually need to manage what is supplied."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "context_path",
+      "label": "Conversation History"
+    }
+  ],
+  "mainPath": [
+    "history_growth",
+    "context_pressure",
+    "managed_context"
+  ],
+  "nodes": [
+    {
+      "id": "history_growth",
+      "lane": "context_path",
+      "col": 0,
+      "type": "messagebus",
+      "label": "History grows",
+      "sublabel": "more turns retained",
+      "width": 132
+    },
+    {
+      "id": "context_pressure",
+      "lane": "context_path",
+      "col": 2,
+      "type": "security",
+      "label": "Context pressure",
+      "sublabel": "tokens + noise + exposure",
+      "width": 150
+    },
+    {
+      "id": "managed_context",
+      "lane": "context_path",
+      "col": 4,
+      "type": "backend",
+      "label": "Managed context",
+      "sublabel": "select, trim, summarize",
+      "tag": "later chapters",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "growth-pressure",
+      "from": "history_growth",
+      "to": "context_pressure",
+      "label": "more context",
+      "variant": "default"
+    },
+    {
+      "id": "pressure-managed",
+      "from": "context_pressure",
+      "to": "managed_context",
+      "label": "manage deliberately",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Cost and latency",
+      "items": [
+        "Longer prompts use more input tokens.",
+        "More context generally means more work per request."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Relevance and freshness",
+      "items": [
+        "Old context can become stale or irrelevant.",
+        "Previous AI output is not automatically verified truth."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Privacy and security",
+      "items": [
+        "Sensitive data may be replayed when it is no longer needed.",
+        "Untrusted instructions can persist if history is resent blindly."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Finite context window",
+      "items": [
+        "History competes with the current request and room for the answer.",
+        "Conversation context cannot grow forever."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Resource efficiency",
+      "items": [
+        "Unnecessary tokens mean unnecessary serving work.",
+        "Exact environmental impact depends on the serving system."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Messages: four core roles",
+    "subtitle": "Roles make conversational context explicit",
+    "locale": "en",
+    "animation": "trace",
+    "visual_preset": "classic",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "core-conversation",
+        "label": "Core conversation",
+        "focus": [
+          "system",
+          "human",
+          "context",
+          "chat_model",
+          "ai"
+        ],
+        "note": "System and Human messages become ordered context; the model returns an AIMessage."
+      },
+      {
+        "id": "tool-result-role",
+        "label": "Where ToolMessage fits",
+        "focus": [
+          "ai",
+          "tool_exec",
+          "tool_message",
+          "chat_model"
+        ],
+        "note": "A ToolMessage carries an executed tool result back to the model; the application still runs the tool."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "application",
+      "label": "Application Context"
+    },
+    {
+      "id": "model",
+      "label": "Chat Model"
+    },
+    {
+      "id": "tools",
+      "label": "Tool Runtime"
+    }
+  ],
+  "mainPath": [
+    "human",
+    "context",
+    "chat_model",
+    "ai"
+  ],
+  "nodes": [
+    {
+      "id": "system",
+      "lane": "application",
+      "col": 0,
+      "type": "security",
+      "label": "SystemMessage",
+      "sublabel": "behavior + instructions",
+      "width": 150
+    },
+    {
+      "id": "human",
+      "lane": "application",
+      "col": 1,
+      "type": "external",
+      "label": "HumanMessage",
+      "sublabel": "user input",
+      "width": 150
+    },
+    {
+      "id": "context",
+      "lane": "application",
+      "col": 2,
+      "type": "messagebus",
+      "label": "Ordered Context",
+      "sublabel": "messages sent now",
+      "tag": "current invocation",
+      "width": 150
+    },
+    {
+      "id": "chat_model",
+      "lane": "model",
+      "col": 3,
+      "type": "cloud",
+      "label": "Chat Model",
+      "sublabel": "processes supplied context",
+      "width": 150
+    },
+    {
+      "id": "ai",
+      "lane": "application",
+      "col": 4,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "model output + metadata",
+      "width": 150
+    },
+    {
+      "id": "tool_exec",
+      "lane": "tools",
+      "col": 5,
+      "type": "external",
+      "label": "Tool Execution",
+      "sublabel": "application runs tool",
+      "width": 150
+    },
+    {
+      "id": "tool_message",
+      "lane": "tools",
+      "col": 4,
+      "type": "messagebus",
+      "label": "ToolMessage",
+      "sublabel": "tool result for model",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "system-context",
+      "from": "system",
+      "to": "context",
+      "label": "instruction role",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "human-context",
+      "from": "human",
+      "to": "context",
+      "label": "user role",
+      "variant": "default"
+    },
+    {
+      "id": "context-model",
+      "from": "context",
+      "to": "chat_model",
+      "label": "invoke(messages)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "model-ai",
+      "from": "chat_model",
+      "to": "ai",
+      "label": "returns",
+      "variant": "emphasis",
+      "role": "return"
+    },
+    {
+      "id": "ai-tool",
+      "from": "ai",
+      "to": "tool_exec",
+      "label": "optional tool call",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "tool-result",
+      "from": "tool_exec",
+      "to": "tool_message",
+      "label": "result",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "tool-back",
+      "from": "tool_message",
+      "to": "chat_model",
+      "label": "send result back",
+      "variant": "dashed",
+      "role": "return",
+      "fromSide": "left",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Role is part of meaning",
+      "items": [
+        "System, Human, AI, and Tool are not interchangeable labels.",
+        "Messages are ordered context for the current model call."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Tool boundary",
+      "items": [
+        "AIMessage may request a tool call.",
+        "ToolMessage is the execution result, not the request itself."
+      ]
+    }
+  ]
+}

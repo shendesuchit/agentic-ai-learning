@@ -1,0 +1,172 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Messages: with history vs isolated invocation",
+    "subtitle": "Our experiment changed only whether earlier turns were supplied",
+    "locale": "en",
+    "animation": "trace",
+    "visual_preset": "classic",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "with-context",
+        "label": "With history",
+        "focus": [
+          "history_bundle",
+          "followup",
+          "model_with",
+          "answer_with"
+        ],
+        "note": "The earlier API discussion is part of the current request."
+      },
+      {
+        "id": "without-context",
+        "label": "Without history",
+        "focus": [
+          "isolated_question",
+          "model_without",
+          "answer_without"
+        ],
+        "note": "The isolated invocation contains no earlier API or restaurant turn."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "with_history",
+      "label": "With Relevant History"
+    },
+    {
+      "id": "isolated",
+      "label": "Isolated Current Request"
+    }
+  ],
+  "mainPath": [
+    "history_bundle",
+    "followup",
+    "model_with",
+    "answer_with"
+  ],
+  "nodes": [
+    {
+      "id": "history_bundle",
+      "lane": "with_history",
+      "col": 0,
+      "type": "messagebus",
+      "label": "Earlier Messages",
+      "sublabel": "System + Human + AI",
+      "width": 160
+    },
+    {
+      "id": "followup",
+      "lane": "with_history",
+      "col": 1,
+      "type": "external",
+      "label": "Follow-up",
+      "sublabel": "\"the same concept\"",
+      "width": 150
+    },
+    {
+      "id": "model_with",
+      "lane": "with_history",
+      "col": 3,
+      "type": "cloud",
+      "label": "Chat Model",
+      "sublabel": "history supplied",
+      "width": 145
+    },
+    {
+      "id": "answer_with",
+      "lane": "with_history",
+      "col": 5,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "restaurant analogy",
+      "tag": "context resolved",
+      "width": 155
+    },
+    {
+      "id": "isolated_question",
+      "lane": "isolated",
+      "col": 0,
+      "type": "external",
+      "label": "Isolated question",
+      "sublabel": "What concept + analogy?",
+      "width": 165
+    },
+    {
+      "id": "model_without",
+      "lane": "isolated",
+      "col": 3,
+      "type": "cloud",
+      "label": "Chat Model",
+      "sublabel": "earlier turns absent",
+      "width": 145
+    },
+    {
+      "id": "answer_without",
+      "lane": "isolated",
+      "col": 5,
+      "type": "security",
+      "label": "AIMessage",
+      "sublabel": "asks for more context",
+      "tag": "observed",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "history-followup",
+      "from": "history_bundle",
+      "to": "followup",
+      "label": "ordered together",
+      "variant": "default"
+    },
+    {
+      "id": "followup-model",
+      "from": "followup",
+      "to": "model_with",
+      "label": "invoke(history)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "model-answer",
+      "from": "model_with",
+      "to": "answer_with",
+      "label": "contextual answer",
+      "variant": "emphasis"
+    },
+    {
+      "id": "isolated-model",
+      "from": "isolated_question",
+      "to": "model_without",
+      "label": "invoke(single message)",
+      "variant": "dashed"
+    },
+    {
+      "id": "model-no-context",
+      "from": "model_without",
+      "to": "answer_without",
+      "label": "needs context",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Observed success",
+      "items": [
+        "With history, the model resolved 'the same concept'."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Observed negative case",
+      "items": [
+        "Without history, the model asked for more context.",
+        "This tests the input boundary rather than guessing about memory."
+      ]
+    }
+  ]
+}

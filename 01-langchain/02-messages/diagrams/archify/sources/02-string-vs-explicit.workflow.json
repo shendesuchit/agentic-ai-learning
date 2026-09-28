@@ -1,0 +1,153 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Messages: string shortcut vs explicit messages",
+    "subtitle": "A plain string is convenient; explicit roles scale to real conversations",
+    "locale": "en",
+    "animation": "trace",
+    "visual_preset": "classic",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "shortcut-view",
+        "label": "String shortcut",
+        "focus": [
+          "plain_string",
+          "model_a",
+          "ai_a"
+        ],
+        "note": "Useful for one standalone human/user request."
+      },
+      {
+        "id": "explicit-view",
+        "label": "Explicit message",
+        "focus": [
+          "human_message",
+          "model_b",
+          "ai_b"
+        ],
+        "note": "Use explicit message objects when role and conversation history need to be visible."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "shortcut",
+      "label": "String Shortcut"
+    },
+    {
+      "id": "explicit",
+      "label": "Explicit Message"
+    }
+  ],
+  "mainPath": [
+    "plain_string",
+    "model_a",
+    "ai_a"
+  ],
+  "nodes": [
+    {
+      "id": "plain_string",
+      "lane": "shortcut",
+      "col": 0,
+      "type": "external",
+      "label": "Plain string",
+      "sublabel": "\"Explain what an API is.\"",
+      "width": 155
+    },
+    {
+      "id": "model_a",
+      "lane": "shortcut",
+      "col": 2,
+      "type": "cloud",
+      "label": "Chat Model",
+      "sublabel": "single user input",
+      "width": 140
+    },
+    {
+      "id": "ai_a",
+      "lane": "shortcut",
+      "col": 4,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "model output",
+      "width": 140
+    },
+    {
+      "id": "human_message",
+      "lane": "explicit",
+      "col": 0,
+      "type": "messagebus",
+      "label": "HumanMessage",
+      "sublabel": "content = API question",
+      "width": 155
+    },
+    {
+      "id": "model_b",
+      "lane": "explicit",
+      "col": 2,
+      "type": "cloud",
+      "label": "Chat Model",
+      "sublabel": "explicit user role",
+      "width": 140
+    },
+    {
+      "id": "ai_b",
+      "lane": "explicit",
+      "col": 4,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "model output",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "string-model",
+      "from": "plain_string",
+      "to": "model_a",
+      "label": "invoke(string)",
+      "variant": "default"
+    },
+    {
+      "id": "string-ai",
+      "from": "model_a",
+      "to": "ai_a",
+      "label": "returns",
+      "variant": "emphasis"
+    },
+    {
+      "id": "message-model",
+      "from": "human_message",
+      "to": "model_b",
+      "label": "invoke([message])",
+      "variant": "default"
+    },
+    {
+      "id": "message-ai",
+      "from": "model_b",
+      "to": "ai_b",
+      "label": "returns",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Same basic intent",
+      "items": [
+        "Both forms can express one user request.",
+        "Explicit Messages reveal role and structure."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "When history grows",
+      "items": [
+        "Use ordered Message objects for multi-turn context.",
+        "Do not confuse convenience syntax with hidden memory."
+      ]
+    }
+  ]
+}

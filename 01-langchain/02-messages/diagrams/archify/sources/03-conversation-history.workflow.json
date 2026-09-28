@@ -1,0 +1,190 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Messages: building conversation history",
+    "subtitle": "The application appends turns and resends relevant context",
+    "locale": "en",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "first-turn",
+        "label": "First turn",
+        "focus": [
+          "sys",
+          "user1",
+          "model1",
+          "ai1"
+        ],
+        "note": "The first invocation returns an AIMessage which the application appends."
+      },
+      {
+        "id": "second-turn",
+        "label": "Contextual follow-up",
+        "focus": [
+          "sys",
+          "user1",
+          "ai1",
+          "user2",
+          "model2",
+          "ai2"
+        ],
+        "note": "The second invocation resends earlier relevant turns, so 'the same concept' has context."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "app",
+      "label": "Application History"
+    },
+    {
+      "id": "model",
+      "label": "Model Invocation"
+    }
+  ],
+  "mainPath": [
+    "sys",
+    "user1",
+    "model1",
+    "ai1",
+    "user2",
+    "model2",
+    "ai2"
+  ],
+  "nodes": [
+    {
+      "id": "sys",
+      "lane": "app",
+      "col": 0,
+      "type": "security",
+      "label": "SystemMessage",
+      "sublabel": "patient teacher",
+      "width": 145
+    },
+    {
+      "id": "user1",
+      "lane": "app",
+      "col": 1,
+      "type": "external",
+      "label": "HumanMessage",
+      "sublabel": "Explain an API",
+      "width": 145
+    },
+    {
+      "id": "model1",
+      "lane": "model",
+      "col": 2,
+      "type": "cloud",
+      "label": "Model Call 1",
+      "sublabel": "invoke(messages)",
+      "width": 145
+    },
+    {
+      "id": "ai1",
+      "lane": "app",
+      "col": 3,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "API explanation",
+      "tag": "append",
+      "width": 145
+    },
+    {
+      "id": "user2",
+      "lane": "app",
+      "col": 4,
+      "type": "external",
+      "label": "HumanMessage",
+      "sublabel": "same concept, restaurant",
+      "tag": "append",
+      "width": 160
+    },
+    {
+      "id": "model2",
+      "lane": "model",
+      "col": 5,
+      "type": "cloud",
+      "label": "Model Call 2",
+      "sublabel": "resend history",
+      "width": 145
+    },
+    {
+      "id": "ai2",
+      "lane": "app",
+      "col": 5,
+      "type": "backend",
+      "label": "AIMessage",
+      "sublabel": "restaurant analogy",
+      "tag": "append",
+      "width": 145,
+      "yOffset": 34
+    }
+  ],
+  "edges": [
+    {
+      "id": "sys-user",
+      "from": "sys",
+      "to": "user1",
+      "label": "ordered context",
+      "variant": "default"
+    },
+    {
+      "id": "user-model1",
+      "from": "user1",
+      "to": "model1",
+      "label": "send",
+      "variant": "emphasis"
+    },
+    {
+      "id": "model1-ai",
+      "from": "model1",
+      "to": "ai1",
+      "label": "return",
+      "variant": "emphasis",
+      "role": "return"
+    },
+    {
+      "id": "ai-user2",
+      "from": "ai1",
+      "to": "user2",
+      "label": "append next turn",
+      "variant": "default"
+    },
+    {
+      "id": "user2-model2",
+      "from": "user2",
+      "to": "model2",
+      "label": "send full relevant list",
+      "variant": "emphasis"
+    },
+    {
+      "id": "model2-ai2",
+      "from": "model2",
+      "to": "ai2",
+      "label": "return + append",
+      "variant": "emphasis",
+      "role": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Application responsibility",
+      "items": [
+        "The Python list stores the ordered history.",
+        "The model sees the Messages supplied in each invocation."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Continuity",
+      "items": [
+        "Append the returned AIMessage when it is relevant.",
+        "Resend context deliberately; do not assume invisible history."
+      ]
+    }
+  ]
+}

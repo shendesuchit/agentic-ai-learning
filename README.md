@@ -4,20 +4,22 @@ This is my learning laboratory for understanding how agentic AI systems work.
 The aim is to explain each idea clearly, build a small experiment, and understand
 what happens when its assumptions fail.
 
-**Current checkpoint:** Orientation and the first Models experiments are ready to
-read. A direct Groq SDK call and the same request through LangChain's `ChatGroq`
-wrapper have both been run and compared.
+**Current checkpoint:** Orientation, Models, and the core Messages chapter are
+ready to read. We compared a direct Groq SDK call with LangChain's `ChatGroq`
+wrapper, then tested explicit `SystemMessage`, `HumanMessage`, and `AIMessage`
+history against an isolated request with no earlier turns supplied.
 
-**[Explore the learning website](https://shendesuchit.github.io/agentic-ai-learning/)** for chapter navigation and interactive Models diagrams.
+**[Explore the learning website](https://shendesuchit.github.io/agentic-ai-learning/)** for chapter navigation and interactive diagrams.
 
 ## Start here
 
 1. Begin with [00 — Orientation](01-langchain/00-orientation/README.md).
 2. Continue with [01 — Models](01-langchain/01-models/README.md) and its [interactive diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html).
-3. Read the [direct provider baseline](01-langchain/01-models/experiments/01-provider-specific-baseline/README.md).
-4. Compare it with the [LangChain model wrapper experiment](01-langchain/01-models/experiments/02-langchain-model-wrapper/README.md).
-5. Use the [LangChain learning map](01-langchain/README.md) to see the topic order.
-6. If you are working locally, [SETUP.md](SETUP.md) covers VS Code and GitHub Desktop.
+3. Compare the [direct provider baseline](01-langchain/01-models/experiments/01-provider-specific-baseline/README.md) with the [LangChain model wrapper experiment](01-langchain/01-models/experiments/02-langchain-model-wrapper/README.md).
+4. Continue to [02 — Messages](01-langchain/02-messages/README.md) and its [five interactive diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/02-messages/visual-guide.html).
+5. Run or review the [message-history experiment](01-langchain/02-messages/experiments/01-message-history/README.md).
+6. Use the [LangChain learning map](01-langchain/README.md) to see the topic order.
+7. If you are working locally, [SETUP.md](SETUP.md) covers VS Code and GitHub Desktop.
 
 ## How we will learn
 
@@ -35,8 +37,8 @@ Explanations, small experiments, useful failures, comparisons, diagrams,
 handwritten notes, selected outputs, references, and tests that answer a real
 question. Each topic starts small and grows only when the learning needs it.
 
-The [roadmap](ROADMAP.md) records the wider journey. Only LangChain has folders
-at present, and only its first two topics have been created.
+The [roadmap](ROADMAP.md) records the wider journey. LangChain is the active
+module; the next planned chapter is Prompts.
 
 ## Relationship to the product
 

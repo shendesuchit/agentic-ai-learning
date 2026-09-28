@@ -18,5 +18,35 @@
         "text": "A model response can contain content, tool-call requests, and metadata. Available fields depend on the model and integration. A tool-call request describes what to call; the application still needs to execute the tool."
       }
     ]
+  },
+  "01-langchain/02-messages": {
+    "title": "Messages",
+    "diagrams": [
+      {
+        "title": "The four message roles",
+        "file": "diagrams/archify/roles.html",
+        "text": "System, Human, AI, and Tool messages represent different roles in model context. The tool path is shown as optional because a ToolMessage appears only when a tool is actually executed."
+      },
+      {
+        "title": "String shortcut vs explicit messages",
+        "file": "diagrams/archify/string-vs-explicit.html",
+        "text": "A plain string is convenient for one standalone user input. Explicit message objects make role and conversation structure visible when history matters."
+      },
+      {
+        "title": "Building conversation history",
+        "file": "diagrams/archify/history.html",
+        "text": "The application appends the returned AIMessage, adds the next HumanMessage, and sends the relevant ordered list again. Continuity comes from supplied context."
+      },
+      {
+        "title": "With history vs isolated invocation",
+        "file": "diagrams/archify/history-vs-isolated.html",
+        "text": "This visual mirrors the experiment: the history-aware request could resolve the earlier topic, while the isolated request contained no earlier API or restaurant messages."
+      },
+      {
+        "title": "Risks of unbounded history",
+        "file": "diagrams/archify/history-risks.html",
+        "text": "Replaying everything forever creates context-window, cost, relevance, privacy, security, and resource-use problems. Good context is selected for the current task, not maximized blindly."
+      }
+    ]
   }
 }

@@ -11,15 +11,14 @@ did it leave in our hands?**
 
 ## Agreed learning sequence
 
-This is the sequence agreed on 26 September 2026. Only orientation and models
-have folders so far. The remaining entries describe future work.
+This is the sequence agreed on 26 September 2026.
 
 | Topic | Learning focus | Status |
 |---|---|---|
 | [00-orientation](00-orientation/README.md) | Why the framework exists; packages, ecosystem, and boundaries | Explanation available |
 | [01-models](01-models/README.md) | Provider baseline; model interface, configuration, invocation, and responses | Direct SDK and LangChain wrapper compared with Groq |
-| `02-messages` | Roles, content blocks, metadata, tool messages, history, and chunks | Next |
-| `03-prompts` | Static instructions, templates, dynamic inputs, and message placeholders | Planned |
+| [02-messages](02-messages/README.md) | Roles, content, metadata, tool-message boundary, history, and chunks | Core roles + explicit history experiment completed with Groq |
+| `03-prompts` | Static instructions, templates, dynamic inputs, and message placeholders | Next |
 | `04-runnables-and-composition` | Runnable interface, sequences, parallel composition, configuration, retries | Planned |
 | `05-structured-output` | Schemas, validation, native and tool-based approaches, parsing failures | Planned |
 | `06-tools-and-tool-calling` | Functions, descriptions, schemas, binding, requests, execution, responses | Planned |
@@ -41,8 +40,29 @@ have folders so far. The remaining entries describe future work.
 - Orientation and Models explanations are available, with [interactive Models diagrams](https://shendesuchit.github.io/agentic-ai-learning/01-langchain/01-models/visual-guide.html).
 - The [direct SDK experiment](01-models/experiments/01-provider-specific-baseline/README.md) was run with Groq and `openai/gpt-oss-20b`.
 - The [LangChain model wrapper experiment](01-models/experiments/02-langchain-model-wrapper/README.md) repeated the same prompt and model through `ChatGroq`.
-- We observed a provider SDK `ChatCompletion` in the baseline and a LangChain `AIMessage` in the wrapper experiment.
-- The next topic is Messages, where we will study the message abstraction that Experiment 02 exposed.
+- We observed `ChatCompletion` in the provider SDK path and `AIMessage` in the LangChain wrapper path.
+- The [Messages experiment](02-messages/experiments/01-message-history/README.md) then tested explicit roles, application-managed history, and an isolated request without the earlier turns.
+- Five Messages visual sources explain roles, syntax, history construction, the isolation comparison, and unbounded-history risks.
+- The next topic is Prompts.
+
+## Important boundary learned in Messages
+
+The model receives the context supplied for the current invocation.
+
+Our application chose and ordered:
+
+```text
+SystemMessage
+HumanMessage
+AIMessage
+HumanMessage
+```
+
+and resent that list for the contextual follow-up.
+
+This is the foundation for later Context Engineering and Short-Term Memory work.
+Those later chapters will decide **which** history should be retained or supplied;
+the Messages chapter establishes the representation and the input boundary.
 
 ## Boundaries
 
@@ -58,7 +78,6 @@ before agents so that execution and data flow are easier to reason about.
 
 Each topic includes questions beside the relevant concepts and a consolidated
 set at the end. As topics are completed, their READMEs become the revision index.
-We do not need another question-bank file yet.
 
 ## Product relevance
 
@@ -69,9 +88,11 @@ approved product architecture. Record concrete decisions within each topic.
 ## References and next step
 
 - [LangChain overview](https://docs.langchain.com/oss/python/langchain/overview)
+- [LangChain Messages](https://docs.langchain.com/oss/python/langchain/messages)
 - [Repository conventions](../LEARNING_METHOD.md)
 - [Begin orientation](00-orientation/README.md)
-- [Continue with Models](01-models/README.md)
+- [Models](01-models/README.md)
+- [Messages](02-messages/README.md)
 
 Update this page when a topic is completed, using the agreed Git checkpoint
 convention. Preserve useful misconceptions and conclusions in the topic that
