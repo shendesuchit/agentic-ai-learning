@@ -123,6 +123,79 @@ Use the [module page](01-langchain/README.md) to record progress.
 | Desktop says the extracted folder is not a repository | Use step 2; a ZIP has no `.git` history. |
 | PowerShell blocks `Activate.ps1` | Use `uv run`; activation is unnecessary for this workflow. |
 
+## Repository validation
+
+Run the [validator](scripts/validate.py) from the repository root before a
+topic checkpoint. It never installs dependencies or calls providers.
+
+FAST and STANDARD use the root uv learning environment. These commands preserve
+its installed packages and avoid network access by uv or lockfile changes:
+
+```powershell
+uv --no-cache --offline --no-python-downloads run --no-sync python -B scripts/validate.py fast
+uv --no-cache --offline --no-python-downloads run --no-sync python -B scripts/validate.py standard
+```
+
+FULL uses the dedicated Python 3.11 website environment instead:
+
+```powershell
+.\website\.venv\Scripts\python.exe -B scripts/validate.py full
+```
+
+Keep website packages separate so they cannot conflict with learning dependencies
+or be removed by a learning-environment synchronization. No activation is needed;
+Git and uv must remain on PATH. Plain `uv run` may synchronize the root environment
+before validation, so use the no-sync commands above.
+
+One-time website provisioning, when explicitly requested:
+
+```powershell
+.\.venv\Scripts\python.exe -B -m venv website/.venv
+.\website\.venv\Scripts\python.exe -m pip install -r website/requirements.txt
+```
+
+The root interpreter must be Python 3.11. Creation does not install website
+packages into the root environment. The existing `.venv/` Git ignore rule covers
+`website/.venv`; no new dependency file or lockfile is needed.
+
+- **FAST:** Git state (pending edits are allowed), Python version, TOML parsing,
+  tracked Python syntax, forbidden credential/environment filenames, and generated
+  output conventions. The validator checks itself even before it is staged.
+- **STANDARD:** FAST plus offline `uv lock --check`, conservative redacted secret
+  scanning of tracked working-copy and staged text, required website files,
+  diagram JSON/HTML, navigation inventory, and advisory progress checks.
+- **FULL:** STANDARD plus the existing strict `website/build.py build` and checks
+  for expected generated pages and diagrams. Request this mode explicitly: it
+  regenerates `.website-build/content` and `.website-build/site`. It never deploys.
+
+FAST and STANDARD do not write repository files or synchronize the environment.
+The uv check can use operating-system temporary storage. FULL preserves the
+existing website pip/`website/requirements.txt` setup and requires those pinned
+packages to be installed in the interpreter running the validator. Missing
+prerequisites fail with a diagnostic; nothing is installed automatically.
+
+PASS or WARN-only runs exit 0; any FAIL exits nonzero. Provider experiments are
+reported as SKIP and do not fail validation. The offline experiment allowlist is
+currently empty; new entries require an explicit review for provider calls,
+network access, and file writes. uv's offline flag does not sandbox Python code.
+
+Checks primarily cover tracked files, including staged additions. Stage new topic
+files yourself before final validation; unstaged new topic files are not validated.
+Working-copy syntax and website checks do not prove a partially staged commit is
+valid. Source hashes and Git state are compared before and after each run.
+
+Secrets are never printed, and real `.env` files are never read. Suspected secrets
+fail pending human review; diagnostics show only location and never the value.
+This is a conservative text scan, not a comprehensive security audit. Subprocess
+output is withheld because tools can print sensitive information.
+
+Static website checks cover this repository's current conventions, not arbitrary
+YAML or Markdown. FULL delegates configuration, plugin, and rendered Markdown-link
+validation to MkDocs; external URLs and interactive diagram behavior are not
+tested. Progress warnings cannot establish learner understanding. Do not fix
+unrelated findings automatically or treat validation as permission to commit,
+push, dispatch a workflow, or publish.
+
 ## Official setup references
 
 - [GitHub Desktop: create a repository](https://docs.github.com/en/desktop/overview/creating-your-first-repository-using-github-desktop)
