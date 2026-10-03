@@ -15,36 +15,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  validate-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: website/requirements.txt
+      - name: Set up uv for offline lock validation
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.12.5'
+          enable-cache: false
       - name: Install website tooling
         run: python -m pip install -r website/requirements.txt
       - name: Get Pages URL
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         id: pages
         uses: actions/configure-pages@v5
-      - name: Build website
+      # FULL validates first, builds once, then checks generated output.
+      - name: Validate repository and build website
         env:
           SITE_URL: ${{ steps.pages.outputs.base_url }}
-        run: python website/build.py build
+        run: python -B scripts/validate.py full
       - name: Upload website
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-pages-artifact@v4
         with:
           path: .website-build/site
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: validate-build
     runs-on: ubuntu-latest
     permissions:
       pages: write
